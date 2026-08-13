@@ -13,8 +13,9 @@ public class Locacao {
     private LocalDate dataInicio;
     private LocalDate dataFim;
     private LocalDate dataDevolucaoEfetiva = null;
-    private double valorTotal;
+    private double valorBase;
     private StatusLocacao statusLocacao;
+    private Pagamento pagamento;
 
     public Locacao() {
     }
@@ -25,8 +26,9 @@ public class Locacao {
         this.veiculo = veiculo;
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;
-        this.valorTotal = valorTotal;
+        this.valorBase = valorTotal;
         this.statusLocacao = statusLocacao;
+        this.pagamento = null;
     }
 
     public String getId() {
@@ -73,12 +75,12 @@ public class Locacao {
         this.dataDevolucaoEfetiva = dataDevolucaoEfetiva;
     }
 
-    public double getValorTotal() {
-        return valorTotal;
+    public double getValorBase() {
+        return valorBase;
     }
 
-    public void setValorTotal(double valorTotal) {
-        this.valorTotal = valorTotal;
+    public void setValorBase(double valorBase) {
+        this.valorBase = valorBase;
     }
 
     public StatusLocacao getStatusLocacao() {
@@ -88,6 +90,15 @@ public class Locacao {
     public void setStatusLocacao(StatusLocacao statusLocacao) {
         this.statusLocacao = statusLocacao;
     }
+
+    public Pagamento getPagamento() {
+        return pagamento;
+    }
+
+    public void setPagamento(Pagamento pagamento) {
+        this.pagamento = pagamento;
+    }
+
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
