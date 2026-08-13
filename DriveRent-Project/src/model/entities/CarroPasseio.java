@@ -32,7 +32,7 @@ public class CarroPasseio extends Veiculo{
     @Override
     public double calcularDiaria(int dias){
         if (isPossuiArcondicionado()){
-            return dias * getValorDiarioBase() + 20.00;
+            return dias * (getValorDiarioBase() + 20.0);
         } return dias * getValorDiarioBase();
     }
 }

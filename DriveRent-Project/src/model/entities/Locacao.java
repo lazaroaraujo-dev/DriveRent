@@ -33,10 +33,6 @@ public class Locacao {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public Cliente getCliente() {
         return cliente;
     }
