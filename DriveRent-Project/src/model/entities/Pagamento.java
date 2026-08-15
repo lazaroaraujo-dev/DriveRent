@@ -62,6 +62,10 @@ public class Pagamento {
         this.status = status;
     }
 
+    public int getParcelas() {
+        return parcelas;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

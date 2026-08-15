@@ -3,6 +3,7 @@ package model.entities;
 import model.enums.StatusLocacao;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 public class Locacao {
@@ -99,6 +100,21 @@ public class Locacao {
         this.pagamento = pagamento;
     }
 
+    public double calcularMultaAtraso(double valorMultaPorDia){
+        if (this.dataDevolucaoEfetiva != null && dataDevolucaoEfetiva.isAfter(this.dataFim)){
+            long diasAtraso = ChronoUnit.DAYS.between(dataFim, dataDevolucaoEfetiva);
+
+            return diasAtraso * valorMultaPorDia;
+        }
+        return 0.0;
+    }
+    public void registrarDevolucao(LocalDate dataDevolucao, double valorMultaPorDia){
+        this.dataDevolucaoEfetiva = dataDevolucao;
+        double valorMulta = calcularMultaAtraso(valorMultaPorDia);
+        if (valorMulta>0) this.valorBase += valorMulta;
+
+        this.statusLocacao = StatusLocacao.CONCLUIDA;
+    }
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
