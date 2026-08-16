@@ -5,9 +5,9 @@ import model.entities.Cliente;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClienteDao implements DaoPersistencia<Cliente>{
+public class ClienteDao implements PersistenciaDao<Cliente> {
     private static final String ARQUIVO = "data/cliente.json";
-    private List<Cliente> clienteDaoList;
+    private final List<Cliente> clienteDaoList;
 
     public ClienteDao() {
         this.clienteDaoList = new ArrayList<>();

@@ -2,7 +2,7 @@ package dao;
 
 import java.util.List;
 
-public interface DaoPersistencia<T> {
+public interface PersistenciaDao<T> {
     void salvar(T obj);
 
     T buscarPorId(String cpf);

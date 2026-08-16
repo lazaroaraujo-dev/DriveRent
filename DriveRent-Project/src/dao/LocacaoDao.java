@@ -5,9 +5,9 @@ import model.entities.Locacao;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocacaoDao implements DaoPersistencia<Locacao>{
+public class LocacaoDao implements PersistenciaDao<Locacao> {
     private static final String ARQUIVO_LOCACAO = "data/locacao.json";
-    private List<Locacao> locacaoDaoList;
+    private final List<Locacao> locacaoDaoList;
 
     public LocacaoDao() {
         this.locacaoDaoList = new ArrayList<>();
