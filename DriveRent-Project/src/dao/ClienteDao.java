@@ -19,9 +19,9 @@ public class ClienteDao implements PersistenciaDao<Cliente> {
     }
 
     @Override
-    public Cliente buscarPorId(String cpf) {
+    public Cliente buscarPorId(String id) {
         for (Cliente cliente : clienteDaoList){
-            if (cpf.equals(cliente.getCpf())){
+            if (id.equals(cliente.getCpf())){
                 return cliente;
             }
         }return null;

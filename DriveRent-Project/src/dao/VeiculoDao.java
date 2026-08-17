@@ -20,9 +20,9 @@ public class VeiculoDao implements PersistenciaDao<Veiculo> {
     }
 
     @Override
-    public Veiculo buscarPorId(String placa) {
+    public Veiculo buscarPorId(String id) {
         for (Veiculo veiculo : veiculoList){
-            if (veiculo.getId().equals(placa)){
+            if (veiculo.getId().equals(id)){
                 return veiculo;
             }
         }return null;
