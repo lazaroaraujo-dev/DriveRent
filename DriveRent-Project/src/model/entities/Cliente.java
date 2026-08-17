@@ -13,7 +13,9 @@ public class Cliente {
         this.cnh = cnh;
         this.telefone = telefone;
         this.nome = nome;
-        this.cpf = cpf;
+        if (cpf != null){
+            this.cpf = cpf.trim().replace(".","").replace("-", "");
+        }
     }
 
     public String getTelefone() {
