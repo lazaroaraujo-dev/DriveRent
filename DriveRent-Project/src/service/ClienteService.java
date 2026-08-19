@@ -3,6 +3,7 @@ package service;
 import dao.PersistenciaDao;
 import exception.DadosInvalidosException;
 import exception.EntidadeNaoEncontradaException;
+import exception.LocacaoAtivaException;
 import model.entities.Cliente;
 import model.entities.Locacao;
 import model.enums.StatusLocacao;
@@ -42,7 +43,7 @@ public class ClienteService {
         validarCpf(clienteAtualizado.getCpf());
 
         if (clienteDao.buscarPorId(clienteAtualizado.getCpf()) == null){
-            throw new EntidadeNaoEncontradaException("O clienteAtualizado não possui cadastro no sistema.");
+            throw new EntidadeNaoEncontradaException("O cliente "+clienteAtualizado.getNome()+" não possui cadastro no sistema.");
         }
         validarNome(clienteAtualizado.getNome());
 
@@ -69,7 +70,7 @@ public class ClienteService {
                 .anyMatch(l -> l.getCliente().getCpf().equals(cpf) && l.getStatusLocacao() == StatusLocacao.ATIVA);
 
         if (possuiLocacaoAberta) {
-            throw new DadosInvalidosException("Não é possível remover um cliente com locação em aberto.");
+            throw new LocacaoAtivaException("Não é possível remover um cliente com locação em aberto.");
         }
 
         clienteDao.deletar(cpf);

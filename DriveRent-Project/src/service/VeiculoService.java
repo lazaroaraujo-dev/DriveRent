@@ -3,6 +3,8 @@ package service;
 import dao.PersistenciaDao;
 import exception.DadosInvalidosException;
 import exception.EntidadeNaoEncontradaException;
+import exception.LocacaoAtivaException;
+import exception.VeiculoIndisponivelException;
 import model.entities.Veiculo;
 import model.enums.StatusVeiculo;
 
@@ -65,7 +67,7 @@ public class VeiculoService {
         Veiculo veiculo = buscarPorPlaca(placa);
 
         if (veiculo.getStatusVeiculo() == StatusVeiculo.ALUGADO) {
-            throw new DadosInvalidosException("Não é possível remover um veículo que está alugado.");
+            throw new LocacaoAtivaException("Não é possível remover um veículo que está alugado.");
         }
 
         veiculoDao.deletar(placa);
@@ -79,7 +81,7 @@ public class VeiculoService {
         Veiculo veiculo = buscarPorPlaca(placa);
 
         if (veiculo.getStatusVeiculo() == StatusVeiculo.ALUGADO && novoStatus == StatusVeiculo.EM_MANUTENCAO) {
-            throw new DadosInvalidosException("Não é possível enviar para manutenção um veículo que está alugado.");
+            throw new VeiculoIndisponivelException("Não é possível enviar para manutenção um veículo que está alugado.");
         }
 
         veiculo.setStatusVeiculo(novoStatus);

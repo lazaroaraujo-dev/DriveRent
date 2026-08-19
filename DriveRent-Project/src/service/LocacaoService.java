@@ -1,10 +1,7 @@
 package service;
 
 import dao.PersistenciaDao;
-import exception.DadosInvalidosException;
-import exception.DataInvalidaException;
-import exception.EntidadeNaoEncontradaException;
-import exception.VeiculoIndisponivelException;
+import exception.*;
 import model.entities.Cliente;
 import model.entities.Locacao;
 import model.entities.Veiculo;
@@ -13,6 +10,7 @@ import model.enums.StatusVeiculo;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 public class LocacaoService {
 
@@ -54,6 +52,57 @@ public class LocacaoService {
         locacaoDao.salvar(locacao);
         veiculoService.alterarStatus(veiculo.getId(), StatusVeiculo.ALUGADO);
     }
+
+    public List<Locacao> listarTodos(){
+        return locacaoDao.listarTodos();
+    }
+
+    public Locacao buscarPorId(String id){
+        if (id == null || id.isEmpty()){
+            throw new DadosInvalidosException("O campo do id não pode ser nulo.");
+        }
+        Locacao locacao = locacaoDao.buscarPorId(id);
+        if (locacao == null){
+            throw new EntidadeNaoEncontradaException("Não existe nenhuma locação com o id: "+id);
+        }return locacao;
+    }
+    public void atualizar(Locacao locacaoAtualizada){
+        if (locacaoAtualizada == null){
+            throw new DadosInvalidosException("Os dados da locação não podem ser nulos.");
+        }
+        validarId(locacaoAtualizada.getId());
+
+        if (locacaoDao.buscarPorId(locacaoAtualizada.getId()) == null) {
+            throw new EntidadeNaoEncontradaException("A locação não possui cadastro no sistema.");
+        }
+
+        locacaoDao.atualizar(locacaoAtualizada);
+    }
+
+    public void deletar(String id){
+        validarId(id);
+        Locacao locacao = locacaoDao.buscarPorId(id);
+        if (locacao == null) {
+            throw new EntidadeNaoEncontradaException("Não existe nenhuma locação com o id: " + id);
+        }
+        if (locacao.getStatusLocacao() == StatusLocacao.ATIVA){
+            throw new LocacaoAtivaException("Não é possível deletar uma locação ativa.");
+        }
+        locacaoDao.deletar(id);
+    }
+    public void finalizarLocacao(String id, LocalDate dataDevolucao, double valorMultaPorDia){
+        Locacao locacao = buscarPorId(id);
+
+        if (locacao.getStatusLocacao() != StatusLocacao.ATIVA) {
+            throw new DadosInvalidosException("Só é possível finalizar uma locação que está ativa.");
+        }
+
+        locacao.registrarDevolucao(dataDevolucao, valorMultaPorDia);
+        locacaoDao.atualizar(locacao);
+
+        veiculoService.alterarStatus(locacao.getVeiculo().getId(), StatusVeiculo.DISPONIVEL);
+    }
+
     private void validarDatas(LocalDate dataInicio, LocalDate dataFim) {
         if (dataInicio == null || dataFim == null) {
             throw new DadosInvalidosException("As datas de início e fim são obrigatórias.");
@@ -65,4 +114,10 @@ public class LocacaoService {
             throw new DataInvalidaException("A data de fim deve ser posterior à data de início.");
         }
     }
+    private void validarId(String id){
+        if (id == null || id.isEmpty()){
+            throw new DadosInvalidosException("Os id não pode ser nulo.");
+        }
+    }
+
 }
