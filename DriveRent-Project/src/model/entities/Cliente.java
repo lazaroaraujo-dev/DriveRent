@@ -60,4 +60,12 @@ public class Cliente {
     public int hashCode() {
         return Objects.hash(cpf);
     }
+
+    @Override
+    public String toString() {
+        return "Nome: "+getNome()+"\n"+
+                "CPF: "+getCpf()+"\n"+
+                "CNH: "+getCnh()+"\n"+
+                "Telefone: "+getTelefone()+"\n";
+    }
 }
