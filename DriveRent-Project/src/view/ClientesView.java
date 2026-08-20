@@ -2,7 +2,9 @@ package view;
 
 import exception.DadosInvalidosException;
 import exception.EntidadeNaoEncontradaException;
+import exception.LocacaoAtivaException;
 import model.entities.Cliente;
+import model.entities.Locacao;
 import service.ClienteService;
 
 import java.util.List;
@@ -113,6 +115,13 @@ public class ClientesView {
 
     }
     private void removerCliente(){
-
+        try{
+            System.out.println("Digite o CPF do cliente que deseja remover: ");
+            String cpf = scanner.nextLine();
+            clienteService.removerCliente(cpf.trim());
+            System.out.println("Cliente removido com sucesso!");
+        } catch (DadosInvalidosException | EntidadeNaoEncontradaException | LocacaoAtivaException e){
+            System.out.println("Erro: "+e.getMessage());
+        }
     }
 }
