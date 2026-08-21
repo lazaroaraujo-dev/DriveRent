@@ -31,13 +31,22 @@ public class LocacaoService {
         if (locacao == null){
             throw new DadosInvalidosException("Os dados da locação não podem ser nulos.");
         }
+        if (locacao.getCliente() == null) {
+            throw new DadosInvalidosException("A locação precisa de um cliente associado.");
+        }
+        if (locacao.getVeiculo() == null) {
+            throw new DadosInvalidosException("A locação precisa de um veículo associado.");
+        }
+
+        locacao.setDataInicio(LocalDate.now());
         validarDatas(locacao.getDataInicio(), locacao.getDataFim());
+
         Cliente cliente = clienteDao.buscarPorId(locacao.getCliente().getCpf());
         if (cliente == null) {
             throw new EntidadeNaoEncontradaException("Cliente não cadastrado no sistema.");
         }
 
-        Veiculo veiculo = veiculoService.buscarPorPlaca(locacao.getVeiculo().getId());
+        Veiculo veiculo = veiculoService.buscarPorPlaca(locacao.getVeiculo().getPlaca());
 
         if (veiculo.getStatusVeiculo() != StatusVeiculo.DISPONIVEL) {
             throw new VeiculoIndisponivelException("O veículo não está disponível para locação.");
@@ -50,13 +59,29 @@ public class LocacaoService {
         locacao.setStatusLocacao(StatusLocacao.ATIVA);
 
         locacaoDao.salvar(locacao);
-        veiculoService.alterarStatus(veiculo.getId(), StatusVeiculo.ALUGADO);
+        veiculoService.alterarStatus(veiculo.getPlaca(), StatusVeiculo.ALUGADO);
     }
 
     public List<Locacao> listarTodos(){
         return locacaoDao.listarTodos();
     }
 
+    public List<Locacao> buscarPorCliente(String cpf){
+        if (cpf == null || cpf.isEmpty()){
+            throw new DadosInvalidosException("O CPF é obrigatório.");
+        }
+        return locacaoDao.listarTodos().stream()
+                .filter(l -> l.getCliente().getCpf().equals(cpf))
+                .toList();
+    }
+    public List<Locacao> buscarPorVeiculo(String placa){
+        if (placa == null || placa.isEmpty()){
+            throw new DadosInvalidosException("A placa é obrigatória.");
+        }
+        return locacaoDao.listarTodos().stream()
+                .filter(l -> l.getVeiculo().getPlaca().equals(placa))
+                .toList();
+    }
     public Locacao buscarPorId(String id){
         if (id == null || id.isEmpty()){
             throw new DadosInvalidosException("O campo do id não pode ser nulo.");
@@ -100,15 +125,12 @@ public class LocacaoService {
         locacao.registrarDevolucao(dataDevolucao, valorMultaPorDia);
         locacaoDao.atualizar(locacao);
 
-        veiculoService.alterarStatus(locacao.getVeiculo().getId(), StatusVeiculo.DISPONIVEL);
+        veiculoService.alterarStatus(locacao.getVeiculo().getPlaca(), StatusVeiculo.DISPONIVEL);
     }
 
     private void validarDatas(LocalDate dataInicio, LocalDate dataFim) {
         if (dataInicio == null || dataFim == null) {
             throw new DadosInvalidosException("As datas de início e fim são obrigatórias.");
-        }
-        if (dataInicio.isBefore(LocalDate.now())) {
-            throw new DataInvalidaException("A data de início não pode ser no passado.");
         }
         if (!dataFim.isAfter(dataInicio)) {
             throw new DataInvalidaException("A data de fim deve ser posterior à data de início.");

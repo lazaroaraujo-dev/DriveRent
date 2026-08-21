@@ -22,7 +22,7 @@ public class VeiculoDao implements PersistenciaDao<Veiculo> {
     @Override
     public Veiculo buscarPorId(String id) {
         for (Veiculo veiculo : veiculoList){
-            if (veiculo.getId().equals(id)){
+            if (veiculo.getPlaca().equals(id)){
                 return veiculo;
             }
         }return null;
@@ -36,7 +36,7 @@ public class VeiculoDao implements PersistenciaDao<Veiculo> {
     @Override
     public void atualizar(Veiculo obj) {
         for (int i = 0; i < veiculoList.size(); i++) {
-            if (veiculoList.get(i).getId().equals(obj.getId())){
+            if (veiculoList.get(i).getPlaca().equals(obj.getPlaca())){
                 veiculoList.set(i, obj);
                 break;
             }

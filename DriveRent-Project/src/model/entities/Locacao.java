@@ -3,6 +3,7 @@ package model.entities;
 import model.enums.StatusLocacao;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
@@ -125,5 +126,18 @@ public class Locacao {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "UUID: "+getId()+"\n"+
+                "Cliente: "+cliente.getCpf()+"\n"+
+                "Veiculo: "+veiculo.getPlaca()+"\n"+
+                "Data Início: "+getDataInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))+"\n"+
+                "Data Final: "+getDataFim().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))+"\n"+
+                "Data devolução: "+(dataDevolucaoEfetiva != null ? dataDevolucaoEfetiva.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "null")+"\n"+
+                "Valor base: R$ "+getValorBase()+"\n"+
+                "Status Locação: "+getStatusLocacao().toString()+"\n"+
+                "Status Pagamento: "+(pagamento != null ? pagamento.getStatus() : "Sem pagamento registrado")+"\n";
     }
 }

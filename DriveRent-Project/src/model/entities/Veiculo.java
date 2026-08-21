@@ -4,7 +4,7 @@ import model.enums.StatusVeiculo;
 
 public abstract class Veiculo {
 
-    private String id;
+    private String placa;
     private String marca;
     private int ano;
     private double valorDiarioBase;
@@ -13,16 +13,16 @@ public abstract class Veiculo {
     public Veiculo() {
     }
 
-    public Veiculo(String id, String marca, int ano, double valorDiarioBase, StatusVeiculo statusVeiculo) {
-        this.id = id;
+    public Veiculo(String placa, String marca, int ano, double valorDiarioBase, StatusVeiculo statusVeiculo) {
+        this.placa = placa;
         this.marca = marca;
         this.ano = ano;
         this.valorDiarioBase = valorDiarioBase;
         this.statusVeiculo = statusVeiculo;
     }
 
-    public String getId() {
-        return id;
+    public String getPlaca() {
+        return placa;
     }
 
     public String getMarca() {

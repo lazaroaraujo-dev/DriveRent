@@ -23,9 +23,9 @@ public class VeiculoService {
             throw new DadosInvalidosException("Os dados do veículo não podem ser nulos.");
         }
 
-        validarPlaca(veiculo.getId());
+        validarPlaca(veiculo.getPlaca());
 
-        if (veiculoDao.buscarPorId(veiculo.getId()) != null) {
+        if (veiculoDao.buscarPorId(veiculo.getPlaca()) != null) {
             throw new DadosInvalidosException("Já existe um veículo cadastrado com esta placa.");
         }
 
@@ -50,9 +50,9 @@ public class VeiculoService {
             throw new DadosInvalidosException("Os dados do veículo não podem ser nulos.");
         }
 
-        validarPlaca(veiculoAtualizado.getId());
+        validarPlaca(veiculoAtualizado.getPlaca());
 
-        Veiculo veiculoExistente = veiculoDao.buscarPorId(veiculoAtualizado.getId());
+        Veiculo veiculoExistente = veiculoDao.buscarPorId(veiculoAtualizado.getPlaca());
         if (veiculoExistente == null) {
             throw new EntidadeNaoEncontradaException("O veículo não possui cadastro no sistema.");
         }
