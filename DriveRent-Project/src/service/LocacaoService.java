@@ -91,17 +91,24 @@ public class LocacaoService {
             throw new EntidadeNaoEncontradaException("Não existe nenhuma locação com o id: "+id);
         }return locacao;
     }
-    public void atualizar(Locacao locacaoAtualizada){
-        if (locacaoAtualizada == null){
-            throw new DadosInvalidosException("Os dados da locação não podem ser nulos.");
-        }
-        validarId(locacaoAtualizada.getId());
+    public void atualizarDataFim(String id, LocalDate novaDataFim){
+        Locacao locacao = buscarPorId(id);
 
-        if (locacaoDao.buscarPorId(locacaoAtualizada.getId()) == null) {
-            throw new EntidadeNaoEncontradaException("A locação não possui cadastro no sistema.");
+        if (locacao.getStatusLocacao() != StatusLocacao.ATIVA) {
+            throw new DadosInvalidosException("Só é possível alterar a data de uma locação ativa.");
         }
 
-        locacaoDao.atualizar(locacaoAtualizada);
+        if (!novaDataFim.isAfter(locacao.getDataInicio())) {
+            throw new DataInvalidaException("A nova data de fim deve ser posterior à data de início.");
+        }
+
+        locacao.setDataFim(novaDataFim);
+
+        long dias = ChronoUnit.DAYS.between(locacao.getDataInicio(), novaDataFim);
+        double novoValorBase = locacao.getVeiculo().calcularDiaria((int) dias);
+        locacao.setValorBase(novoValorBase);
+
+        locacaoDao.atualizar(locacao);
     }
 
     public void deletar(String id){
@@ -114,6 +121,18 @@ public class LocacaoService {
             throw new LocacaoAtivaException("Não é possível deletar uma locação ativa.");
         }
         locacaoDao.deletar(id);
+    }
+    public void cancelarLocacao(String id){
+        Locacao locacao = buscarPorId(id); // já valida existência
+
+        if (locacao.getStatusLocacao() != StatusLocacao.ATIVA) {
+            throw new DadosInvalidosException("Só é possível cancelar uma locação que está ativa.");
+        }
+
+        locacao.setStatusLocacao(StatusLocacao.CANCELADA);
+        locacaoDao.atualizar(locacao);
+
+        veiculoService.alterarStatus(locacao.getVeiculo().getPlaca(), StatusVeiculo.DISPONIVEL);
     }
     public void finalizarLocacao(String id, LocalDate dataDevolucao, double valorMultaPorDia){
         Locacao locacao = buscarPorId(id);
@@ -128,6 +147,36 @@ public class LocacaoService {
         veiculoService.alterarStatus(locacao.getVeiculo().getPlaca(), StatusVeiculo.DISPONIVEL);
     }
 
+    public void trocarVeiculo(String idLocacao, String novaPlaca){
+        Locacao locacao = buscarPorId(idLocacao);
+
+        if (locacao.getStatusLocacao() != StatusLocacao.ATIVA) {
+            throw new DadosInvalidosException("Só é possível trocar o veículo de uma locação ativa.");
+        }
+
+        Veiculo veiculoAntigo = locacao.getVeiculo();
+        Veiculo veiculoNovo = veiculoService.buscarPorPlaca(novaPlaca);
+
+        if (veiculoNovo.getStatusVeiculo() != StatusVeiculo.DISPONIVEL) {
+            throw new VeiculoIndisponivelException("O novo veículo não está disponível.");
+        }
+
+        LocalDate hoje = LocalDate.now();
+
+        long diasComAntigo = ChronoUnit.DAYS.between(locacao.getDataInicio(), hoje);
+        long diasRestantesComNovo = ChronoUnit.DAYS.between(hoje, locacao.getDataFim());
+
+        double valorParteAntiga = veiculoAntigo.calcularDiaria((int) diasComAntigo);
+        double valorParteNova = veiculoNovo.calcularDiaria((int) diasRestantesComNovo);
+
+        locacao.setValorBase(valorParteAntiga + valorParteNova);
+        locacao.setVeiculo(veiculoNovo);
+
+        locacaoDao.atualizar(locacao);
+
+        veiculoService.alterarStatus(veiculoAntigo.getPlaca(), StatusVeiculo.DISPONIVEL);
+        veiculoService.alterarStatus(veiculoNovo.getPlaca(), StatusVeiculo.ALUGADO);
+    }
     private void validarDatas(LocalDate dataInicio, LocalDate dataFim) {
         if (dataInicio == null || dataFim == null) {
             throw new DadosInvalidosException("As datas de início e fim são obrigatórias.");

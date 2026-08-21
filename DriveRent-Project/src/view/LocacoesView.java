@@ -10,7 +10,6 @@ import model.entities.Veiculo;
 import service.ClienteService;
 import service.LocacaoService;
 import service.VeiculoService;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -39,6 +38,7 @@ public class LocacoesView {
             System.out.println("3. Listar todos as locações");
             System.out.println("4. Atualizar locação");
             System.out.println("5. Remover locação");
+            System.out.println("6. Cancelar locação");
             System.out.println("0. Voltar");
             System.out.println("Escolha uma opção: ");
 
@@ -50,12 +50,13 @@ public class LocacoesView {
                 case 3 -> listarLocacao();
                 case 4 -> atualizarLocacao();
                 case 5 -> removerLocacao();
+                case 6 -> cancelarLocacao();
                 case 0 -> System.out.println("Voltando...");
                 default -> System.out.println("Opção inválida!");
             }
         }
     }
-    public void cadastrarLocacao(){
+    private void cadastrarLocacao(){
         try {
             System.out.println("Digite o CPF do cliente: ");
             String cpf = scanner.nextLine();
@@ -79,7 +80,7 @@ public class LocacoesView {
             System.out.println("Erro: "+ e.getMessage());
         }
     }
-    public void buscarLocacao(){
+    private void buscarLocacao(){
         int opcao = -1;
         while (opcao!=0){
             System.out.println("1. Cliente");
@@ -94,7 +95,7 @@ public class LocacoesView {
             }
         }
     }
-    public void buscarPorCpf(){
+    private void buscarPorCpf(){
         try {
             System.out.println("Digite o CPF do cliente: ");
             String cpf = scanner.nextLine();
@@ -108,7 +109,7 @@ public class LocacoesView {
             System.out.println("Erro: "+e.getMessage());
         }
     }
-    public void buscarPorPlaca(){
+    private void buscarPorPlaca(){
         try {
             System.out.println("Digite a placa do veículo: ");
             String placa = scanner.nextLine();
@@ -123,13 +124,68 @@ public class LocacoesView {
         }
 
     }
-    public void listarLocacao(){
-
+    private void listarLocacao(){
+        List<Locacao> locacoes = locacaoService.listarTodos();
+        if (locacoes.isEmpty()){
+            System.out.println("Nenhuma locação cadastrada.");
+        } else {
+            for (Locacao locacao : locacoes){
+                System.out.println(locacao);
+            }
+        }
     }
-    public void atualizarLocacao(){
-
+    private void atualizarLocacao(){
+        int opcao = -1;
+        while (opcao!=0){
+            System.out.println("1. Atualizar data final");
+            System.out.println("2. Atualizar veículo da locação");
+            System.out.println("0. voltar");
+            opcao = Integer.parseInt(scanner.nextLine());
+            switch (opcao){
+                case 1 -> atualizarDataFinal();
+                case 2 -> atualizarVeiculo();
+                case 0 -> System.out.println("Voltando...");
+                default -> System.out.println("Opção inválida!");
+            }
+        }
     }
-    public void removerLocacao(){
+    private void atualizarDataFinal(){
+        try {
+            System.out.print("Digite o CPF do cliente: ");
+            String cpf = scanner.nextLine();
+
+            List<Locacao> locacoes = locacaoService.buscarPorCliente(cpf);
+            if (locacoes.isEmpty()) {
+                System.out.println("Nenhuma locação encontrada para esse cliente.");
+                return;
+            }
+
+            System.out.println("Locações encontradas:");
+            for (int i = 0; i < locacoes.size(); i++) {
+                System.out.println((i + 1) + " - " + locacoes.get(i));
+            }
+
+            System.out.print("Escolha o número da locação: ");
+            int escolha = Integer.parseInt(scanner.nextLine().trim()) - 1;
+            Locacao locacaoEscolhida = locacoes.get(escolha);
+
+            System.out.print("Nova data de fim (dd/MM/yyyy): ");
+            String dataTexto = scanner.nextLine();
+            LocalDate novaDataFim = LocalDate.parse(dataTexto, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+            locacaoService.atualizarDataFim(locacaoEscolhida.getId(), novaDataFim);
+
+            System.out.println("Data de devolução atualizada com sucesso!");
+        } catch (DadosInvalidosException | DataInvalidaException |
+                 EntidadeNaoEncontradaException | java.time.format.DateTimeParseException e){
+            System.out.println("Erro: "+ e.getMessage());
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Erro: opção inválida.");
+        }
+    }
+    private void atualizarVeiculo(){}
+    private void cancelarLocacao(){}
+    private void removerLocacao(){
 
     }
 }
