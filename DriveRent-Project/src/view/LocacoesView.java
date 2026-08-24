@@ -1,12 +1,10 @@
 package view;
 
-import exception.DadosInvalidosException;
-import exception.DataInvalidaException;
-import exception.EntidadeNaoEncontradaException;
-import exception.VeiculoIndisponivelException;
+import exception.*;
 import model.entities.Cliente;
 import model.entities.Locacao;
 import model.entities.Veiculo;
+import model.enums.MetodoPagamento;
 import service.ClienteService;
 import service.LocacaoService;
 import service.VeiculoService;
@@ -37,8 +35,10 @@ public class LocacoesView {
             System.out.println("2. Buscar locação");
             System.out.println("3. Listar todos as locações");
             System.out.println("4. Atualizar locação");
-            System.out.println("5. Remover locação");
-            System.out.println("6. Cancelar locação");
+            System.out.println("5. Finalizar locação");
+            System.out.println("6. Deletar locação");
+            System.out.println("7. Cancelar locação");
+            System.out.println("8. Registrar pagamento");
             System.out.println("0. Voltar");
             System.out.println("Escolha uma opção: ");
 
@@ -49,8 +49,10 @@ public class LocacoesView {
                 case 2 -> buscarLocacao();
                 case 3 -> listarLocacao();
                 case 4 -> atualizarLocacao();
-                case 5 -> removerLocacao();
-                case 6 -> cancelarLocacao();
+                case 5 -> finalizarLocacao();
+                case 6 -> deletarLocacao();
+                case 7 -> cancelarLocacao();
+                case 8 -> registrarPagamento();
                 case 0 -> System.out.println("Voltando...");
                 default -> System.out.println("Opção inválida!");
             }
@@ -183,9 +185,107 @@ public class LocacoesView {
             System.out.println("Erro: opção inválida.");
         }
     }
-    private void atualizarVeiculo(){}
-    private void cancelarLocacao(){}
-    private void removerLocacao(){
+    private void atualizarVeiculo(){
+        try {
+            Locacao locacaoEscolhida = selecionarLocacaoDoCliente();
+            if (locacaoEscolhida == null) return;
 
+            System.out.print("Placa do novo veículo: ");
+            String novaPlaca = scanner.nextLine();
+
+            locacaoService.trocarVeiculo(locacaoEscolhida.getId(), novaPlaca);
+            System.out.println("Veículo trocado com sucesso!");
+        } catch (DadosInvalidosException | VeiculoIndisponivelException | EntidadeNaoEncontradaException e){
+            System.out.println("Erro: "+ e.getMessage());
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Erro: opção inválida.");
+        }
+    }
+    private void cancelarLocacao(){
+        try {
+            Locacao locacaoEscolhida = selecionarLocacaoDoCliente();
+            if (locacaoEscolhida == null) return;
+
+            locacaoService.cancelarLocacao(locacaoEscolhida.getId());
+            System.out.println("Locação cancelada com sucesso!");
+        } catch (DadosInvalidosException | EntidadeNaoEncontradaException e){
+            System.out.println("Erro: "+ e.getMessage());
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Erro: opção inválida.");
+        }
+    }
+    private void deletarLocacao(){
+        try {
+            Locacao locacaoEscolhida = selecionarLocacaoDoCliente();
+            if (locacaoEscolhida == null) return;
+
+            locacaoService.deletar(locacaoEscolhida.getId());
+            System.out.println("Locação deletada com sucesso!");
+        } catch (DadosInvalidosException | EntidadeNaoEncontradaException | LocacaoAtivaException e){
+            System.out.println("Erro: "+ e.getMessage());
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Erro: opção inválida.");
+        }
+    }
+    private void finalizarLocacao(){
+        try {
+            Locacao locacaoEscolhida = selecionarLocacaoDoCliente();
+            if (locacaoEscolhida == null) return;
+
+            System.out.print("Data de devolução (dd/MM/yyyy): ");
+            String dataTexto = scanner.nextLine();
+            LocalDate dataDevolucao = LocalDate.parse(dataTexto, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+            System.out.print("Valor da multa por dia de atraso (R$): ");
+            double valorMultaPorDia = Double.parseDouble(scanner.nextLine().trim());
+
+            locacaoService.finalizarLocacao(locacaoEscolhida.getId(), dataDevolucao, valorMultaPorDia);
+            System.out.println("Locação finalizada com sucesso!");
+        } catch (DadosInvalidosException | EntidadeNaoEncontradaException |
+                 java.time.format.DateTimeParseException | NumberFormatException e){
+            System.out.println("Erro: "+ e.getMessage());
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Erro: opção inválida.");
+        }
+    }
+    private Locacao selecionarLocacaoDoCliente() {
+        System.out.print("Digite o CPF do cliente: ");
+        String cpf = scanner.nextLine();
+
+        List<Locacao> locacoes = locacaoService.buscarPorCliente(cpf);
+        if (locacoes.isEmpty()) {
+            System.out.println("Nenhuma locação encontrada para esse cliente.");
+            return null;
+        }
+
+        System.out.println("Locações encontradas:");
+        for (int i = 0; i < locacoes.size(); i++) {
+            System.out.println((i + 1) + " - " + locacoes.get(i));
+        }
+
+        System.out.print("Escolha o número da locação: ");
+        int escolha = Integer.parseInt(scanner.nextLine().trim()) - 1;
+        return locacoes.get(escolha);
+    }
+    private void registrarPagamento(){
+        try {
+            Locacao locacaoEscolhida = selecionarLocacaoDoCliente();
+            if (locacaoEscolhida == null) return;
+
+            System.out.println("Métodos disponíveis: PIX, DINHEIRO, CARTAO_CREDITO, CARTAO_DEBITO");
+            System.out.print("Método de pagamento: ");
+            String metodoTexto = scanner.nextLine().trim().toUpperCase();
+            MetodoPagamento metodo = MetodoPagamento.valueOf(metodoTexto);
+
+            locacaoService.registrarPagamento(locacaoEscolhida.getId(), metodo);
+
+            System.out.println("Pagamento registrado com sucesso!");
+        } catch (DadosInvalidosException | EntidadeNaoEncontradaException e){
+            System.out.println("Erro: "+ e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Erro: método de pagamento inválido.");
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Erro: opção inválida.");
+        }
     }
 }

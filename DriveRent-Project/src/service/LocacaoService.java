@@ -4,13 +4,17 @@ import dao.PersistenciaDao;
 import exception.*;
 import model.entities.Cliente;
 import model.entities.Locacao;
+import model.entities.Pagamento;
 import model.entities.Veiculo;
+import model.enums.MetodoPagamento;
 import model.enums.StatusLocacao;
+import model.enums.StatusPagamento;
 import model.enums.StatusVeiculo;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.UUID;
 
 public class LocacaoService {
 
@@ -189,6 +193,34 @@ public class LocacaoService {
         if (id == null || id.isEmpty()){
             throw new DadosInvalidosException("Os id não pode ser nulo.");
         }
+    }
+    public void registrarPagamento(String idLocacao, MetodoPagamento metodo) {
+        if (metodo == null) {
+            throw new DadosInvalidosException("O método de pagamento é obrigatório.");
+        }
+        Locacao locacao = buscarPorId(idLocacao);
+
+        if (locacao.getStatusLocacao() != StatusLocacao.CONCLUIDA) {
+            throw new DadosInvalidosException("Só é possível registrar pagamento de uma locação concluída.");
+        }
+
+        if (locacao.getPagamento() != null) {
+            throw new DadosInvalidosException("Essa locação já possui um pagamento registrado.");
+        }
+
+        Pagamento pagamento = new Pagamento(
+                UUID.randomUUID().toString(),
+                0.0,
+                LocalDate.now(),
+                metodo,
+                StatusPagamento.PENDENTE
+        );
+
+        pagamento.calcularValorFinal(locacao.getValorBase());
+        pagamento.setStatus(StatusPagamento.CONCLUIDO);
+
+        locacao.setPagamento(pagamento);
+        locacaoDao.atualizar(locacao);
     }
 
 }
