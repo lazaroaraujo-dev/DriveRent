@@ -6,8 +6,10 @@ import exception.EntidadeNaoEncontradaException;
 import exception.LocacaoAtivaException;
 import exception.VeiculoIndisponivelException;
 import model.entities.Veiculo;
+import model.enums.CategoriaVeiculo;
 import model.enums.StatusVeiculo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class VeiculoService {
@@ -22,13 +24,14 @@ public class VeiculoService {
         if (veiculo == null) {
             throw new DadosInvalidosException("Os dados do veículo não podem ser nulos.");
         }
-
+        validarAno(veiculo.getAno());
         validarPlaca(veiculo.getPlaca());
+        validarValorDiaria(veiculo.getValorDiarioBase());
 
         if (veiculoDao.buscarPorId(veiculo.getPlaca()) != null) {
             throw new DadosInvalidosException("Já existe um veículo cadastrado com esta placa.");
         }
-
+        veiculo.setStatusVeiculo(StatusVeiculo.DISPONIVEL);
         veiculoDao.salvar(veiculo);
     }
 
@@ -50,6 +53,7 @@ public class VeiculoService {
             throw new DadosInvalidosException("Os dados do veículo não podem ser nulos.");
         }
 
+        validarAno(veiculoAtualizado.getAno());
         validarPlaca(veiculoAtualizado.getPlaca());
 
         Veiculo veiculoExistente = veiculoDao.buscarPorId(veiculoAtualizado.getPlaca());
@@ -102,8 +106,18 @@ public class VeiculoService {
             throw new DadosInvalidosException("A placa deve estar no formato AAA-9999 ou AAA9A99 (Mercosul).");
         }
     }
+    private void validarAno(int ano){
+        int anoAtual = LocalDate.now().getYear();
 
-
+        if (ano < 1950 || ano > anoAtual) {
+            throw new DadosInvalidosException("O ano do veículo deve estar entre 1950 e " + anoAtual + ".");
+        }
+    }
+    private void validarValorDiaria(double valor) {
+        if (valor <= 0) {
+            throw new DadosInvalidosException("O valor diário base deve ser maior que zero.");
+        }
+    }
 }
 
 
