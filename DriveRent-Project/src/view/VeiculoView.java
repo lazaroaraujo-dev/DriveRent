@@ -49,7 +49,7 @@ public class VeiculoView {
             }
         }
     }
-    public void cadastrarVeiculo(){
+    private void cadastrarVeiculo(){
         try {
             System.out.println("Digite a placa do veículo: (AAA-9999 ou AAA9A99(Mercosul)):");
             String placa = scanner.nextLine().trim().toUpperCase();
@@ -95,7 +95,7 @@ public class VeiculoView {
             System.out.println("Erro: categoria de veículo inválida. Use MOTO, CARRO_PASSEIO ou UTILITARIO.");
         }
     }
-    public void buscarPorPlaca(){
+    private void buscarPorPlaca(){
         try {
             System.out.println("Digite a placa do veículo: (AAA-9999 ou AAA9A99)");
             String placa = scanner.nextLine();
@@ -107,7 +107,7 @@ public class VeiculoView {
             System.out.println("Erro: "+e.getMessage());
         }
     }
-    public void listarVeiculos(){
+    private void listarVeiculos(){
         List<Veiculo> veiculos = veiculoService.listarTodos();
 
         if (veiculos.isEmpty()){
@@ -119,7 +119,7 @@ public class VeiculoView {
             System.out.println(veiculo);
         }
     }
-    public void atualizarVeiculo(){
+    private void atualizarVeiculo(){
         try {
             System.out.println("Digite a placa do veículo: (AAA-9999 ou AAA9A99)");
             String placa = scanner.nextLine();
@@ -170,7 +170,7 @@ public class VeiculoView {
             System.out.println("Erro: "+e.getMessage());
         }
     }
-    public void deletarVeiculo(){
+    private void deletarVeiculo(){
         try {
             System.out.println("Digite a plca do veículo (Formato: AAA-9999 ou AAA9A99): ");
             String placa = scanner.nextLine();
@@ -187,7 +187,7 @@ public class VeiculoView {
             System.out.println("Erro: "+e.getMessage());
         }
     }
-    public void alterarStatus() {
+    private void alterarStatus() {
         try {
             System.out.println("Digite a placa do veículo: ");
             String placa = scanner.nextLine();
