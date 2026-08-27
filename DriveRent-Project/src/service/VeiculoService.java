@@ -5,6 +5,9 @@ import exception.DadosInvalidosException;
 import exception.EntidadeNaoEncontradaException;
 import exception.LocacaoAtivaException;
 import exception.VeiculoIndisponivelException;
+import model.entities.CarroPasseio;
+import model.entities.Moto;
+import model.entities.Utilitario;
 import model.entities.Veiculo;
 import model.enums.CategoriaVeiculo;
 import model.enums.StatusVeiculo;
@@ -24,9 +27,11 @@ public class VeiculoService {
         if (veiculo == null) {
             throw new DadosInvalidosException("Os dados do veículo não podem ser nulos.");
         }
+
         validarAno(veiculo.getAno());
         validarPlaca(veiculo.getPlaca());
         validarValorDiaria(veiculo.getValorDiarioBase());
+        validarDadosEspecificos(veiculo);
 
         if (veiculoDao.buscarPorId(veiculo.getPlaca()) != null) {
             throw new DadosInvalidosException("Já existe um veículo cadastrado com esta placa.");
@@ -52,9 +57,10 @@ public class VeiculoService {
         if (veiculoAtualizado == null) {
             throw new DadosInvalidosException("Os dados do veículo não podem ser nulos.");
         }
-
         validarAno(veiculoAtualizado.getAno());
         validarPlaca(veiculoAtualizado.getPlaca());
+        validarValorDiaria(veiculoAtualizado.getValorDiarioBase());
+        validarDadosEspecificos(veiculoAtualizado);
 
         Veiculo veiculoExistente = veiculoDao.buscarPorId(veiculoAtualizado.getPlaca());
         if (veiculoExistente == null) {
@@ -116,6 +122,25 @@ public class VeiculoService {
     private void validarValorDiaria(double valor) {
         if (valor <= 0) {
             throw new DadosInvalidosException("O valor diário base deve ser maior que zero.");
+        }
+    }
+    private void validarCilindradas(int cilindradas) {
+        if (cilindradas < 50 || cilindradas > 2500) {
+            throw new DadosInvalidosException("Cilindradas da moto devem estar entre 50 e 2500 cc.");
+        }
+    }
+    private void validarDadosEspecificos(Veiculo veiculo) {
+        if (veiculo instanceof Moto moto) {
+            validarCilindradas(moto.getCilindradas());
+        }
+        else if (veiculo instanceof CarroPasseio carro) {
+            if (carro.getNumeroPortas() < 2 || carro.getNumeroPortas() > 5) {
+                throw new DadosInvalidosException("Número de portas do carro deve ser entre 2 e 5.");
+            }
+        } else if (veiculo instanceof Utilitario utilitario) {
+            if (utilitario.getCapacidadeCargaTon() <= 0) {
+                throw new DadosInvalidosException("Capacidade de carga do utilitário deve ser maior que 0.");
+            }
         }
     }
 }
