@@ -2,7 +2,7 @@
 
 Sistema de gerenciamento de locação de veículos desenvolvido em Java.
 
-O DriveRent foi desenvolvido como um projeto acadêmico com o objetivo de aplicar conceitos de Programação Orientada a Objetos, separação de responsabilidades, injeção de dependências, tratamento de exceções e modelagem de um sistema de locação de veículos.
+O DriveRent foi desenvolvido como um projeto acadêmico com o objetivo de aplicar conceitos de Programação Orientada a Objetos, separação de responsabilidades, injeção de dependências, tratamento de exceções, persistência de dados e modelagem de um sistema de locação de veículos.
 
 ---
 
@@ -17,6 +17,103 @@ O sistema possui três áreas principais:
 - 📋 Gerenciamento de locações
 
 Além disso, o sistema possui regras de negócio para disponibilidade de veículos, cálculo de valores de locação, multas por atraso, cancelamentos, devoluções e pagamentos.
+
+Os dados são persistidos localmente em arquivos JSON, permitindo que as informações sejam mantidas mesmo após o encerramento da aplicação.
+
+---
+
+## 🛠️ Tecnologias utilizadas
+
+- **Java 21**
+- **Maven**
+- **Gson**
+- **JSON**
+- **Git**
+- **GitHub**
+
+### Conceitos e recursos utilizados
+
+- Programação Orientada a Objetos (POO)
+- Encapsulamento
+- Herança
+- Abstração
+- Polimorfismo
+- Interfaces
+- Generics
+- Streams
+- Enumerações
+- Injeção de dependências
+- Separação de responsabilidades
+- Tratamento de exceções
+- Serialização e desserialização JSON
+
+---
+
+## 🏗️ Arquitetura
+
+O projeto utiliza uma arquitetura em camadas, buscando separar as responsabilidades de cada parte do sistema.
+
+```text
+src/
+├── model/
+│   ├── entities/
+│   └── enums/
+├── dao/
+├── service/
+├── persistence/
+├── exception/
+└── view/
+```
+
+### Responsabilidades das camadas
+
+**Model**
+
+Contém as entidades e enumerações utilizadas para representar o domínio da aplicação.
+
+**DAO**
+
+Responsável pelo acesso e manipulação dos dados persistidos.
+
+**Service**
+
+Contém as regras de negócio, validações e operações principais do sistema.
+
+**Persistence**
+
+Responsável pelo gerenciamento da persistência dos dados em arquivos JSON utilizando Gson.
+
+**Exception**
+
+Contém as exceções personalizadas utilizadas para representar erros específicos do domínio.
+
+**View**
+
+Responsável pela interação com o usuário através do terminal.
+
+---
+
+## 💾 Persistência de dados
+
+O sistema utiliza arquivos JSON para persistir os dados localmente.
+
+Os arquivos são armazenados no diretório:
+
+```text
+data/
+├── clientes.json
+├── veiculos.json
+└── locacoes.json
+```
+
+A leitura e escrita dos arquivos são centralizadas através da classe `JsonDataManager`.
+
+O projeto também utiliza adapters personalizados do Gson para lidar com tipos que necessitam de tratamento específico durante a serialização e desserialização, como:
+
+- `LocalDate`
+- Herança entre os diferentes tipos de `Veiculo`
+
+Dessa forma, os dados permanecem disponíveis mesmo após o encerramento da aplicação.
 
 ---
 
@@ -44,7 +141,7 @@ Os dados do cliente incluem:
 - CNH
 - Telefone
 
-CPF, CNH e telefone são tratados como `String`, pois são identificadores/dados de contato e não valores utilizados para operações matemáticas.
+CPF, CNH e telefone são tratados como `String`, pois são identificadores e dados de contato, não valores utilizados para operações matemáticas.
 
 ---
 
@@ -56,9 +153,9 @@ O sistema suporta diferentes categorias de veículos:
 - 🚘 Carro de passeio
 - 🚚 Utilitário
 
-Cada tipo possui características específicas.
+Cada tipo possui características e regras específicas.
 
-#### Moto
+#### 🏍️ Moto
 
 Possui:
 
@@ -66,7 +163,9 @@ Possui:
 - Valor diário
 - Regra específica para cálculo da diária
 
-#### Carro de passeio
+Motos com mais de 250 cilindradas possuem um desconto de 5% no cálculo da diária.
+
+#### 🚘 Carro de passeio
 
 Possui:
 
@@ -74,9 +173,9 @@ Possui:
 - Ar-condicionado
 - Valor diário
 
-Veículos com ar-condicionado possuem um acréscimo no cálculo da diária.
+Veículos com ar-condicionado possuem um acréscimo de R$ 20,00 no cálculo da diária.
 
-#### Utilitário
+#### 🚚 Utilitário
 
 Possui:
 
@@ -87,7 +186,7 @@ A capacidade de carga influencia o cálculo da diária.
 
 ---
 
-### Gerenciamento de veículos
+## 🔧 Gerenciamento de veículos
 
 É possível:
 
@@ -100,9 +199,11 @@ A capacidade de carga influencia o cálculo da diária.
 
 Os veículos possuem diferentes estados, como:
 
-- `DISPONIVEL`
-- `ALUGADO`
-- `EM_MANUTENCAO`
+```text
+DISPONIVEL
+ALUGADO
+EM_MANUTENCAO
+```
 
 O sistema também possui validações para:
 
@@ -115,7 +216,7 @@ O sistema também possui validações para:
 
 ---
 
-### 📋 Locações
+## 📋 Locações
 
 O sistema permite:
 
@@ -142,7 +243,7 @@ Ao cadastrar uma locação:
 
 ---
 
-### 🔄 Troca de veículo
+## 🔄 Troca de veículo
 
 Durante uma locação ativa é possível trocar o veículo.
 
@@ -157,7 +258,7 @@ O sistema:
 
 ---
 
-### 🏁 Finalização da locação
+## 🏁 Finalização da locação
 
 Ao finalizar uma locação, o sistema registra a data de devolução e calcula uma possível multa por atraso.
 
@@ -168,3 +269,163 @@ Após a finalização:
 ```text
 Locação: ATIVA → CONCLUIDA
 Veículo: ALUGADO → DISPONIVEL
+```
+
+---
+
+## 💳 Pagamentos
+
+O sistema possui suporte ao registro de pagamentos associados às locações.
+
+Os pagamentos possuem informações relacionadas ao:
+
+- Valor
+- Método de pagamento
+- Status do pagamento
+
+Os métodos de pagamento e seus respectivos estados são representados através de `enum`.
+
+---
+
+## 📐 Regras de negócio
+
+O sistema possui diversas regras para garantir a consistência dos dados, incluindo:
+
+- Um CPF não pode estar associado a mais de um cliente.
+- Um veículo não pode ser alugado enquanto estiver indisponível.
+- Um cliente com locação ativa não pode ser removido.
+- A disponibilidade do veículo é verificada antes da criação de uma locação.
+- Uma locação ativa pode sofrer troca de veículo seguindo as regras de disponibilidade.
+- A finalização da locação altera o estado do veículo.
+- Atrasos na devolução podem gerar multas.
+- Cada categoria de veículo possui sua própria regra de cálculo de valor.
+- Dados inválidos geram exceções específicas do domínio.
+
+---
+
+## ⚠️ Tratamento de exceções
+
+O projeto utiliza exceções personalizadas para representar situações específicas do sistema.
+
+Entre elas:
+
+```text
+DadosInvalidosException
+DataInvalidaException
+EntidadeNaoEncontradaException
+LocacaoAtivaException
+VeiculoIndisponivelException
+```
+
+As exceções são utilizadas principalmente na camada de serviço para impedir operações que violem as regras de negócio.
+
+A camada de apresentação (`View`) realiza o tratamento dessas exceções para informar o usuário sem interromper a execução normal do sistema.
+
+---
+
+## ▶️ Como executar
+
+### Pré-requisitos
+
+Para executar o projeto, é necessário ter instalado:
+
+- Java 21
+- Maven
+
+### 1. Clone o repositório
+
+```bash
+git clone https://github.com/lazaroaraujo-dev/DriveRent.git
+```
+
+### 2. Entre no diretório do projeto
+
+```bash
+cd DriveRent
+```
+
+### 3. Compile o projeto
+
+```bash
+mvn clean package
+```
+
+### 4. Execute a aplicação
+
+Execute a classe `Main`.
+
+A aplicação será iniciada através do terminal.
+
+---
+
+## 📁 Estrutura do projeto
+
+```text
+DriveRent/
+│
+├── data/
+│   ├── clientes.json
+│   ├── veiculos.json
+│   └── locacoes.json
+│
+├── DriveRent-Project/
+│   └── src/
+│       ├── dao/
+│       ├── exception/
+│       ├── model/
+│       │   ├── entities/
+│       │   └── enums/
+│       ├── persistence/
+│       ├── service/
+│       └── view/
+│
+├── pom.xml
+├── .gitignore
+└── README.md
+```
+
+---
+
+## 📚 Conceitos aplicados
+
+Durante o desenvolvimento foram aplicados conceitos importantes de desenvolvimento de software e Programação Orientada a Objetos, como:
+
+- **Encapsulamento**
+- **Herança**
+- **Abstração**
+- **Polimorfismo**
+- **Interfaces**
+- **Generics**
+- **Streams API**
+- **Enum**
+- **Injeção de dependências**
+- **Separação de responsabilidades**
+- **Arquitetura em camadas**
+- **Persistência de dados**
+- **Serialização e desserialização JSON**
+- **Tratamento de exceções**
+- **Validação de dados**
+- **Regras de negócio**
+
+---
+
+## 🚧 Próximos passos
+
+Algumas melhorias que podem ser implementadas futuramente:
+
+- [ ] Adicionar testes automatizados
+- [ ] Melhorar o tratamento de entradas inválidas no terminal
+- [ ] Melhorar a interface da aplicação
+- [ ] Adicionar mais validações de domínio
+- [ ] Migrar a persistência JSON para um banco de dados relacional
+- [ ] Criar uma API REST utilizando Spring Boot
+- [ ] Adicionar documentação da API
+- [ ] Criar uma interface web para o sistema
+
+---
+
+## 👨‍💻 Autor
+
+**Lázaro Araújo**
+
+Projeto desenvolvido para fins acadêmicos e como parte da construção de portfólio na área de desenvolvimento de software.
