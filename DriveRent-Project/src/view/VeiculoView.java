@@ -54,7 +54,7 @@ public class VeiculoView {
             System.out.println("Digite a placa do veículo: (AAA-9999 ou AAA9A99(Mercosul)):");
             String placa = scanner.nextLine().trim().toUpperCase();
 
-            System.out.println("Tipo do veículo: (MOTO, CARRO_PASSEIO, UTILITARIO: ");
+            System.out.println("Tipo do veículo: (MOTO, CARRO_PASSEIO, UTILITARIO): ");
             CategoriaVeiculo categoriaVeiculo = CategoriaVeiculo.valueOf(scanner.nextLine().trim().toUpperCase());
 
             System.out.println("Digite o ano do veículo: ");
