@@ -1,7 +1,20 @@
 ### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### Maven ###
+target/
+
+### Java ###
+*.class
+
+### IntelliJ IDEA ###
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+
 .kotlin
 
 ### Eclipse ###
