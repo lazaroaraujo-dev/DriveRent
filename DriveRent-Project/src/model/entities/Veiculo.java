@@ -57,4 +57,13 @@ public abstract class Veiculo {
         this.statusVeiculo = statusVeiculo;
     }
     public abstract double calcularDiaria(int dias);
+
+    @Override
+    public String toString() {
+        return "Placa: "+placa+"\n"+
+                "Marca"+marca+"\n"+
+                "Ano: "+ano+"\n"+
+                "Valor diário base R$ "+valorDiarioBase+"\n"+
+                "Status do veículo: "+statusVeiculo.toString();
+    }
 }

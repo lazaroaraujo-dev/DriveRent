@@ -18,9 +18,11 @@ public class ClientesView {
         this.scanner = scanner;
         this.clienteService = clienteService;
     }
-    public void exibirMenu(){
+    public void exibirMenu() {
         int opcao = -1;
-        while (opcao!=0){
+
+        while (opcao != 0) {
+
             System.out.println("=== Menu Cliente ===");
             System.out.println("1. Cadastrar cliente");
             System.out.println("2. Buscar cliente por CPF");
@@ -30,19 +32,23 @@ public class ClientesView {
             System.out.println("0. Voltar");
             System.out.println("Escolha uma opção: ");
 
-            opcao = Integer.parseInt(scanner.nextLine().trim());
+            try {
+                opcao = Integer.parseInt(scanner.nextLine().trim());
 
-            switch (opcao) {
-                case 1 -> cadastrarCliente();
-                case 2 -> buscarCliente();
-                case 3 -> listarClientes();
-                case 4 -> atualizarClientes();
-                case 5 -> removerCliente();
-                case 0 -> System.out.println("Voltando...");
-                default -> System.out.println("Opção inválida!");
+                switch (opcao) {
+                    case 1 -> cadastrarCliente();
+                    case 2 -> buscarCliente();
+                    case 3 -> listarClientes();
+                    case 4 -> atualizarClientes();
+                    case 5 -> removerCliente();
+                    case 0 -> System.out.println("Voltando...");
+                    default -> System.out.println("Opção inválida!");
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("Erro: digite apenas números.");
             }
         }
-
     }
     private void cadastrarCliente(){
         try {
@@ -69,7 +75,7 @@ public class ClientesView {
             String cpf = scanner.nextLine();
             Cliente cliente = clienteService.buscarPorCpf(cpf);
             System.out.println(cliente);
-        } catch (DadosInvalidosException e){
+        } catch (DadosInvalidosException | EntidadeNaoEncontradaException e){
             System.out.println("Erro: "+e.getMessage());
         }
     }

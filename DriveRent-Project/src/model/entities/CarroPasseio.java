@@ -7,8 +7,8 @@ public class CarroPasseio extends Veiculo{
     private boolean possuiArcondicionado;
     private int numeroPortas;
 
-    public CarroPasseio(String id, String marca, int ano, double valorDiarioBase, StatusVeiculo statusVeiculo, boolean possuiArcondicionado, int numeroPortas) {
-        super(id, marca, ano, valorDiarioBase, statusVeiculo);
+    public CarroPasseio(String placa, String marca, int ano, double valorDiarioBase, StatusVeiculo statusVeiculo, boolean possuiArcondicionado, int numeroPortas) {
+        super(placa, marca, ano, valorDiarioBase, statusVeiculo);
         this.possuiArcondicionado = possuiArcondicionado;
         this.numeroPortas = numeroPortas;
     }
@@ -34,5 +34,15 @@ public class CarroPasseio extends Veiculo{
         if (isPossuiArcondicionado()){
             return dias * (getValorDiarioBase() + 20.0);
         } return dias * getValorDiarioBase();
+    }
+
+    @Override
+    public String toString() {
+        String possuiArCondicionadoString = "NÃO";
+        if (isPossuiArcondicionado()){
+            possuiArCondicionadoString = "SIM";
+        }
+        return super.toString()+"\n"+"Possui ar condicionado: "+possuiArCondicionadoString+"\n"+
+                "Número de portas: "+numeroPortas;
     }
 }

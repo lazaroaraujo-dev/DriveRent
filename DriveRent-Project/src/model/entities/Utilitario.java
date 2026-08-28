@@ -6,8 +6,8 @@ public class Utilitario extends Veiculo{
 
     private double capacidadeCargaTon;
 
-    public Utilitario(String id, String marca, int ano, double valorDiarioBase, StatusVeiculo statusVeiculo, double capacidadeCargaTon) {
-        super(id, marca, ano, valorDiarioBase, statusVeiculo);
+    public Utilitario(String placa, String marca, int ano, double valorDiarioBase, StatusVeiculo statusVeiculo, double capacidadeCargaTon) {
+        super(placa, marca, ano, valorDiarioBase, statusVeiculo);
         this.capacidadeCargaTon = capacidadeCargaTon;
     }
 
@@ -23,5 +23,10 @@ public class Utilitario extends Veiculo{
     public double calcularDiaria(int dias) {
         double diariaComTaxa = getValorDiarioBase() + (capacidadeCargaTon * 15.0);
         return diariaComTaxa * dias;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString()+"\n"+"Capacidade (Toneladas): "+capacidadeCargaTon;
     }
 }

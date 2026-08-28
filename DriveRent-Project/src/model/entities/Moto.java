@@ -6,8 +6,8 @@ public class Moto extends Veiculo{
 
     private int cilindradas;
 
-    public Moto(String id, String marca, int ano, double valorDiarioBase, StatusVeiculo statusVeiculo, int cilindradas) {
-        super(id, marca, ano, valorDiarioBase, statusVeiculo);
+    public Moto(String placa, String marca, int ano, double valorDiarioBase, StatusVeiculo statusVeiculo, int cilindradas) {
+        super(placa, marca, ano, valorDiarioBase, statusVeiculo);
         this.cilindradas = cilindradas;
     }
 
@@ -25,5 +25,10 @@ public class Moto extends Veiculo{
             return (dias * getValorDiarioBase()) - (dias*getValorDiarioBase())*0.05;
         }
         return (dias * getValorDiarioBase());
+    }
+
+    @Override
+    public String toString() {
+        return super.toString()+"\n"+"Cilindradas: "+getCilindradas();
     }
 }

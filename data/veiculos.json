@@ -1,0 +1,11 @@
+[
+  {
+    "cilindradas": 50,
+    "placa": "AAA-9999",
+    "marca": "Honda",
+    "ano": 1999,
+    "valorDiarioBase": 20.0,
+    "statusVeiculo": "DISPONIVEL",
+    "tipo": "MOTO"
+  }
+]
