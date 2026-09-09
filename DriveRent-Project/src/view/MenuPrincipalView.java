@@ -16,28 +16,27 @@ public class MenuPrincipalView {
         this.veiculoView = veiculoView;
         this.locacoesView = locacoesView;
     }
-    public void exibirMenu(){
-        try {
-            int opcao = -1;
-            while (opcao!=0){
-                System.out.println("=== Menu principal ===");
-                System.out.println("1. Gerenciar Cliente(s)");
-                System.out.println("2. Gerenciar Veículo(s)");
-                System.out.println("3. Gerenciar Locações(s)");
-                System.out.println("0. Sair");
+    public void exibirMenu() {
+        int opcao = -1;
+        while (opcao != 0) {
+            System.out.println("=== Menu principal ===");
+            System.out.println("1. Gerenciar Cliente(s)");
+            System.out.println("2. Gerenciar Veículo(s)");
+            System.out.println("3. Gerenciar Locações(s)");
+            System.out.println("0. Sair");
+            try {
                 opcao = Integer.parseInt(scanner.nextLine());
 
-                switch (opcao){
+                switch (opcao) {
                     case 1 -> clientesView.exibirMenu();
                     case 2 -> veiculoView.exibirMenu();
                     case 3 -> locacoesView.exibirMenu();
                     case 0 -> System.out.println("Saindo...");
                     default -> System.out.println("Opção inválida!");
                 }
+            } catch (NumberFormatException e) {
+                System.out.println("Erro: " + e.getMessage());
             }
-        } catch (NumberFormatException e){
-            System.out.println("Erro: "+e.getMessage());
         }
     }
-
 }
